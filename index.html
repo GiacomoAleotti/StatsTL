@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrazione Partita</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Registrazione Dati Partita</h1>
+        <button id="start-game">Inizia Partita</button>
+    </header>
+    <main>
+        <section id="input-section" style="display: none;">
+            <input id="action-input" type="text" placeholder="Es. 91 2 i" />
+        </section>
+
+        <section id="legend" style="display: none;">
+            <h2>Legenda Shortcut</h2>
+            <ul>
+                <li><strong>2i</strong>: Tiro da 2 segnato</li>
+                <li><strong>2o</strong>: Tiro da 2 sbagliato</li>
+                <li><strong>3i</strong>: Tiro da 3 segnato</li>
+                <li><strong>3o</strong>: Tiro da 3 sbagliato</li>
+                <li><strong>li</strong>: Tiro libero segnato</li>
+                <li><strong>lo</strong>: Tiro libero sbagliato</li>
+                <li><strong>ro</strong>: Rimbalzo offensivo</li>
+                <li><strong>rd</strong>: Rimbalzo difensivo</li>
+                <li><strong>pp</strong>: Palla persa</li>
+                <li><strong>pr</strong>: Palla recuperata</li>
+                <li><strong>a</strong>: Assist</li>
+                <li><strong>ff</strong>: Fallo fatto</li>
+                <li><strong>fs</strong>: Fallo subito</li>
+            </ul>
+        </section>
+
+        <section id="live-data">
+            <h2>Log Azioni</h2>
+            <ul id="data-log">
+                <!-- Azioni verranno aggiunte dinamicamente -->
+            </ul>
+        </section>
+
+        <section id="stats-table" style="display: none;">
+            <h2>Statistiche Giocatori</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Numero</th>
+                        <th>Nome</th>
+                        <th>Punti</th>
+                        <th>Tiri Tentati</th>
+                        <th>Tiri Segnati</th>
+                        <th>% Tiri Totale</th>
+                        <th>% Tiri da 2</th>
+                        <th>% Tiri da 3</th>
+                        <th>Liberi Segnati</th>
+                        <th>Liberi Tentati</th>
+                        <th>% Liberi</th>
+                        <th>Rimbalzi Offensivi</th>
+                        <th>Rimbalzi Difensivi</th>
+                        <th>Palle Recuperate</th>
+                        <th>Palle Perse</th>
+                        <th>Assist</th>
+                        <th>Falli Fatti</th>
+                        <th>Falli Subiti</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-body">
+                    <!-- Dati aggiornati dinamicamente -->
+                </tbody>
+            </table>
+        </section>
+
+        <button id="save-game" style="display: none;">Salva Partita</button>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
