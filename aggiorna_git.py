@@ -8,21 +8,18 @@ def aggiorna_repository(output_directory, branch="main"):
         os.chdir(output_directory)
 
         # Esegui `git add .`
-        result = subprocess.run(["git", "add", "."], check=True, text=True, capture_output=True)
-        print(result.stdout)
+        subprocess.run(["git", "add", "."], check=True, text=True, capture_output=True)
 
         # Esegui `git commit`
         date = datetime.datetime.now()
         commit_message = f"Auto-commit {date.strftime('%Y-%m-%d %H:%M:%S')}"
-        result = subprocess.run(["git", "commit", "-m", commit_message], check=True, text=True, capture_output=True)
-        print(result.stdout)
+        subprocess.run(["git", "commit", "-m", commit_message], check=True, text=True, capture_output=True)
 
         # Rinominare il branch in "main"
         subprocess.run(["git", "branch", "-M", branch], check=True, text=True, capture_output=True)
-        
+
         # Esegui `git push`
-        result = subprocess.run(["git", "push", "origin", branch], check=True, text=True, capture_output=True)
-        print(result.stdout)
+        subprocess.run(["git", "push", "origin", branch], check=True, text=True, capture_output=True)
 
         print("Repository aggiornato con successo!")
 
@@ -35,7 +32,7 @@ def aggiorna_repository(output_directory, branch="main"):
 
 # Esempio di utilizzo
 info_object = {
-    'output-directory': 'C:/Users/giaco/Desktop/SitoTL',  # Sostituisci con la directory del tuo progetto
+    'output-directory': r'C:\Users\giaco\Desktop\SitoTL',  # Percorso locale corretto
 }
 
 aggiorna_repository(info_object['output-directory'])
