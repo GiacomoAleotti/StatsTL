@@ -17,6 +17,9 @@ def aggiorna_repository(output_directory, branch="main"):
         result = subprocess.run(["git", "commit", "-m", commit_message], check=True, text=True, capture_output=True)
         print(result.stdout)
 
+        # Rinominare il branch in "main"
+        subprocess.run(["git", "branch", "-M", branch], check=True, text=True, capture_output=True)
+        
         # Esegui `git push`
         result = subprocess.run(["git", "push", "origin", branch], check=True, text=True, capture_output=True)
         print(result.stdout)
