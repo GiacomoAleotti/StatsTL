@@ -12,37 +12,54 @@
         <button id="start-game">Inizia Partita</button>
     </header>
     <main>
-        <section id="input-section" style="display: none;">
-            <input id="action-input" type="text" placeholder="Es. 91 2 i" />
+        <section id="rosa-squadra-section">
+            <h2>Rosa Squadra</h2>
+            <div id="rosa-squadra">
+                <!-- Lista dei giocatori non convocati -->
+            </div>
+        </section>
+        
+        <section id="convocati-section">
+            <h2>Convocati</h2>
+            <div id="convocati">
+                <!-- Lista dei giocatori convocati -->
+            </div>
+        </section>
+        
+        <section id="giocatori-in-campo-section">
+            <h2>Giocatori in Campo</h2>
+            <div id="players-in-field-campo">
+                <!-- Lista dei giocatori in campo -->
+            </div>
+        </section>
+        
+
+        <!-- Sezione Statistiche -->
+        <section id="stats-buttons" style="display: none;">
+            <h2>Statistiche</h2>
+            <div id="buttons-container">
+                <button data-action="2i">Tiro da 2 segnato</button>
+                <button data-action="2o">Tiro da 2 sbagliato</button>
+                <button data-action="3i">Tiro da 3 segnato</button>
+                <button data-action="3o">Tiro da 3 sbagliato</button>
+                <button data-action="li">Tiro libero segnato</button>
+                <button data-action="lo">Tiro libero sbagliato</button>
+                <button data-action="ro">Rimbalzo offensivo</button>
+                <button data-action="rd">Rimbalzo difensivo</button>
+                <button data-action="pp">Palla persa</button>
+                <button data-action="pr">Palla recuperata</button>
+                <button data-action="a">Assist</button>
+                <button data-action="ff">Fallo fatto</button>
+                <button data-action="fs">Fallo subito</button>
+            </div>
         </section>
 
-        <section id="legend" style="display: none;">
-            <h2>Legenda Shortcut</h2>
-            <ul>
-                <li><strong>2i</strong>: Tiro da 2 segnato</li>
-                <li><strong>2o</strong>: Tiro da 2 sbagliato</li>
-                <li><strong>3i</strong>: Tiro da 3 segnato</li>
-                <li><strong>3o</strong>: Tiro da 3 sbagliato</li>
-                <li><strong>li</strong>: Tiro libero segnato</li>
-                <li><strong>lo</strong>: Tiro libero sbagliato</li>
-                <li><strong>ro</strong>: Rimbalzo offensivo</li>
-                <li><strong>rd</strong>: Rimbalzo difensivo</li>
-                <li><strong>pp</strong>: Palla persa</li>
-                <li><strong>pr</strong>: Palla recuperata</li>
-                <li><strong>a</strong>: Assist</li>
-                <li><strong>ff</strong>: Fallo fatto</li>
-                <li><strong>fs</strong>: Fallo subito</li>
-            </ul>
-        </section>
+        <!-- Bottoni Torna Indietro e Sostituisci sopra la tabella -->
 
-        <section id="live-data">
-            <h2>Log Azioni</h2>
-            <ul id="data-log">
-                <!-- Azioni verranno aggiunte dinamicamente -->
-            </ul>
-        </section>
+</div>
 
-        <section id="stats-table" style="display: none;">
+        <!-- Tabella Statistiche -->
+        <section id="stats-table">
             <h2>Statistiche Giocatori</h2>
             <table>
                 <thead>
@@ -72,8 +89,6 @@
                 </tbody>
             </table>
         </section>
-
-        <button id="save-game" style="display: none;">Salva Partita</button>
     </main>
     <script src="app.js"></script>
 </body>

@@ -1,13 +1,14 @@
-const dataLog = document.getElementById('data-log');
-const actionInput = document.getElementById('action-input');
+const rosaSquadraList = document.getElementById('rosa-squadra');
+const convocatiList = document.getElementById('convocati');
+const playersInField = document.getElementById('players-in-field-campo');
+const statsButtons = document.getElementById('buttons-container');
+const statsTable = document.getElementById('stats-body');
 const startGameButton = document.getElementById('start-game');
-const saveGameButton = document.getElementById('save-game');
-const inputSection = document.getElementById('input-section');
-const statsTable = document.getElementById('stats-table');
-const statsBody = document.getElementById('stats-body');
-const legendSection = document.getElementById('legend');
+const saveGameButton = document.createElement('button');
+const undoButton = document.createElement('button');
+const sostituisciButton = document.createElement('button');
 
-// Dati dei giocatori precaricati
+// Dati giocatori
 const giocatori = {
     3: 'Albe',
     6: 'Meluz',
@@ -29,10 +30,8 @@ const giocatori = {
     91: 'JJ',
 };
 
-// Statistiche dei giocatori
+// Statistiche
 const statisticheGiocatori = {};
-
-// Inizializza le statistiche dei giocatori
 Object.keys(giocatori).forEach(numero => {
     statisticheGiocatori[numero] = {
         punti: 0,
@@ -54,111 +53,177 @@ Object.keys(giocatori).forEach(numero => {
     };
 });
 
-// Funzione per aggiornare le statistiche
-const aggiornaStatistiche = (numero, azione) => {
-    if (!statisticheGiocatori[numero]) return;
+// Storico delle statistiche
+const storicoAzioni = [];
+const convocati = [];
+const giocatoriInCampo = [];
 
-    switch (azione) {
-        case '2i': // Tiro da 2 segnato
-            statisticheGiocatori[numero].punti += 2;
-            statisticheGiocatori[numero].tiriTentati++;
-            statisticheGiocatori[numero].tiriDa2Segnati++;
-            statisticheGiocatori[numero].tiriSegnati++;
-            statisticheGiocatori[numero].tiriDa2++;
-            break;
+// Giocatore selezionato per azione o sostituzione
+let giocatoreSelezionato = null;
+let bottoneSelezionato = null;
 
-        case '2o': // Tiro da 2 sbagliato
-            statisticheGiocatori[numero].tiriTentati++;
-            statisticheGiocatori[numero].tiriDa2++;
-            break;
+// Inizializza la rosa squadra
+const aggiornaRosaSquadra = () => {
+    rosaSquadraList.innerHTML = '';
+    Object.keys(giocatori).forEach(numero => {
+        if (!convocati.includes(numero)) { // Solo giocatori non convocati
+            const btn = document.createElement('button');
+            btn.textContent = `${numero} ${giocatori[numero]}`;
+            btn.addEventListener('click', () => aggiungiConvocato(numero));
+            rosaSquadraList.appendChild(btn);
+        }
+    });
+};
 
-        case '3i': // Tiro da 3 segnato
-            statisticheGiocatori[numero].punti += 3;
-            statisticheGiocatori[numero].tiriTentati++;
-            statisticheGiocatori[numero].tiriDa3Segnati++;
-            statisticheGiocatori[numero].tiriSegnati++;
-            statisticheGiocatori[numero].tiriDa3++;
-            break;
 
-        case '3o': // Tiro da 3 sbagliato
-            statisticheGiocatori[numero].tiriTentati++;
-            statisticheGiocatori[numero].tiriDa3++;
-            break;
 
-        case 'li': // Tiro libero segnato
-            statisticheGiocatori[numero].punti++;
-            statisticheGiocatori[numero].liberiTentati++;
-            statisticheGiocatori[numero].liberiSegnati++;
-            break;
+// Aggiungi giocatore ai convocati
+const aggiornaConvocati = () => {
+    convocatiList.innerHTML = '';
+    convocati.forEach(numero => {
+        const btn = document.createElement('button');
+        btn.textContent = `${numero} ${giocatori[numero]}`;
+        btn.addEventListener('click', () => aggiungiGiocatoreInCampo(numero));
+        convocatiList.appendChild(btn);
+    });
+};
 
-        case 'lo': // Tiro libero sbagliato
-            statisticheGiocatori[numero].liberiTentati++;
-            break;
+const aggiungiConvocato = (numero) => {
+    if (convocati.includes(numero)) return alert('Giocatore già convocato!');
+    if (convocati.length >= 12) return alert('Puoi selezionare massimo 12 convocati!');
+    convocati.push(numero);
+    aggiornaRosaSquadra(); // Aggiorna Rosa Squadra rimuovendo il giocatore
+    aggiornaConvocati();   // Aggiorna immediatamente la lista Convocati
+};
 
-        case 'ro': // Rimbalzo offensivo
-            statisticheGiocatori[numero].rimbalziOffensivi++;
-            break;
 
-        case 'rd': // Rimbalzo difensivo
-            statisticheGiocatori[numero].rimbalziDifensivi++;
-            break;
 
-        case 'pp': // Palla persa
-            statisticheGiocatori[numero].pallePerse++;
-            break;
 
-        case 'pr': // Palla recuperata
-            statisticheGiocatori[numero].palleRecuperate++;
-            break;
 
-        case 'a': // Assist
-            statisticheGiocatori[numero].assist++;
-            break;
 
-        case 'ff': // Fallo fatto
-            statisticheGiocatori[numero].falliFatti++;
-            break;
+// Inizia partita
+startGameButton.addEventListener('click', () => {
+    if (convocati.length === 0) return alert('Seleziona almeno un convocato prima di iniziare la partita!');
+    document.getElementById('convocati-section').style.display = 'block';
+    document.getElementById('stats-buttons').style.display = 'block';
+    document.getElementById('stats-table').style.display = 'block'; // Mostra la tabella
+    rosaSquadraList.parentElement.style.display = 'none';
+    startGameButton.style.display = 'none';
 
-        case 'fs': // Fallo subito
-            statisticheGiocatori[numero].falliSubiti++;
-            break;
+    // Pulsanti aggiuntivi
+    saveGameButton.textContent = 'Salva Partita';
+    saveGameButton.addEventListener('click', salvaPartita);
+    document.body.appendChild(saveGameButton);
 
-        default:
-            console.log('Azione non riconosciuta');
-            return;
+    undoButton.textContent = 'Torna Indietro';
+    undoButton.addEventListener('click', annullaUltimaAzione);
+    document.body.appendChild(undoButton);
+
+    sostituisciButton.textContent = 'Sostituisci Giocatore';
+    sostituisciButton.addEventListener('click', iniziaSostituzione);
+    document.body.appendChild(sostituisciButton);
+});
+const aggiornaGiocatoriInCampo = () => {
+    playersInField.innerHTML = '';
+    giocatoriInCampo.forEach(numero => {
+        const btn = document.createElement('button');
+        btn.textContent = `${numero} ${giocatori[numero]}`;
+        btn.classList.add('player-button');
+        btn.addEventListener('click', () => selezionaGiocatore(numero, btn));
+        playersInField.appendChild(btn);
+    });
+};
+
+const aggiungiGiocatoreInCampo = (numero) => {
+    if (giocatoriInCampo.includes(numero)) {
+        alert('Giocatore già in campo!');
+        return;
+    }
+    if (giocatoriInCampo.length >= 5) {
+        alert;
+        return;
     }
 
-    // Aggiungi un log visivo
-    const logItem = document.createElement('li');
-    logItem.textContent = `Giocatore ${giocatori[numero]} (#${numero}): ${azione}`;
-    dataLog.appendChild(logItem);
+    giocatoriInCampo.push(numero); // Aggiungi il giocatore
+    aggiornaGiocatoriInCampo(); // Aggiorna dinamicamente la lista
+};
 
-    // Aggiorna la tabella
+
+
+
+// Seleziona giocatore
+const selezionaGiocatore = (numero, bottone) => {
+    if (bottoneSelezionato) bottoneSelezionato.classList.remove('selected');
+    bottone.classList.add('selected');
+    giocatoreSelezionato = numero;
+    bottoneSelezionato = bottone;
+};
+
+// Gestione statistiche
+statsButtons.addEventListener('click', (e) => {
+    if (!giocatoreSelezionato) return alert('Seleziona un giocatore!');
+    const azione = e.target.getAttribute('data-action');
+    if (!azione) return;
+
+    // Registra azione
+    storicoAzioni.push({ numero: giocatoreSelezionato, azione });
+    aggiornaStatistiche(giocatoreSelezionato, azione);
+    aggiornaTabella();
+    giocatoreSelezionato = null;
+
+    if (bottoneSelezionato) bottoneSelezionato.classList.remove('selected');
+    bottoneSelezionato = null;
+});
+
+// Aggiorna statistiche
+const aggiornaStatistiche = (numero, azione) => {
+    const stats = statisticheGiocatori[numero];
+    switch (azione) {
+        case '2i': stats.punti += 2; stats.tiriTentati++; stats.tiriSegnati++; stats.tiriDa2Segnati++; stats.tiriDa2++; break;
+        case '2o': stats.tiriTentati++; stats.tiriDa2++; break;
+        case '3i': stats.punti += 3; stats.tiriTentati++; stats.tiriSegnati++; stats.tiriDa3Segnati++; stats.tiriDa3++; break;
+        case '3o': stats.tiriTentati++; stats.tiriDa3++; break;
+        case 'li': stats.punti++; stats.liberiTentati++; stats.liberiSegnati++; break;
+        case 'lo': stats.liberiTentati++; break;
+        case 'ro': stats.rimbalziOffensivi++; break;
+        case 'rd': stats.rimbalziDifensivi++; break;
+        case 'pp': stats.pallePerse++; break;
+        case 'pr': stats.palleRecuperate++; break;
+        case 'a': stats.assist++; break;
+        case 'ff': stats.falliFatti++; break;
+        case 'fs': stats.falliSubiti++; break;
+    }
+};
+
+// Annulla ultima azione
+const annullaUltimaAzione = () => {
+    if (storicoAzioni.length === 0) return alert('Nessuna azione da annullare!');
+    const ultimaAzione = storicoAzioni.pop();
+    const stats = statisticheGiocatori[ultimaAzione.numero];
+    switch (ultimaAzione.azione) {
+        case '2i': stats.punti -= 2; stats.tiriTentati--; stats.tiriSegnati--; stats.tiriDa2Segnati--; stats.tiriDa2--; break;
+        case '2o': stats.tiriTentati--; stats.tiriDa2--; break;
+        case '3i': stats.punti -= 3; stats.tiriTentati--; stats.tiriSegnati--; stats.tiriDa3Segnati--; stats.tiriDa3--; break;
+        case '3o': stats.tiriTentati--; stats.tiriDa3--; break;
+        case 'li': stats.punti--; stats.liberiTentati--; stats.liberiSegnati--; break;
+        case 'lo': stats.liberiTentati--; break;
+        case 'ro': stats.rimbalziOffensivi--; break;
+        case 'rd': stats.rimbalziDifensivi--; break;
+        case 'pp': stats.pallePerse--; break;
+        case 'pr': stats.palleRecuperate--; break;
+        case 'a': stats.assist--; break;
+        case 'ff': stats.falliFatti--; break;
+        case 'fs': stats.falliSubiti--; break;
+    }
     aggiornaTabella();
 };
 
-// Funzione per aggiornare la tabella delle statistiche
+// Aggiorna tabella statistiche
 const aggiornaTabella = () => {
-    statsBody.innerHTML = '';
+    statsTable.innerHTML = ''; // Svuota il corpo della tabella
 
     Object.keys(statisticheGiocatori).forEach(numero => {
         const stats = statisticheGiocatori[numero];
-        const tiriTotaliPercentuale = stats.tiriTentati > 0
-            ? ((stats.tiriSegnati / stats.tiriTentati) * 100).toFixed(1)
-            : '0';
-
-        const tiriDa2Percentuale = stats.tiriDa2 > 0
-            ? ((stats.tiriDa2Segnati / stats.tiriDa2) * 100).toFixed(1)
-            : '0';
-
-        const tiriDa3Percentuale = stats.tiriDa3 > 0
-            ? ((stats.tiriDa3Segnati / stats.tiriDa3) * 100).toFixed(1)
-            : '0';
-
-        const liberiPercentuale = stats.liberiTentati > 0
-            ? ((stats.liberiSegnati / stats.liberiTentati) * 100).toFixed(1)
-            : '0';
-
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${numero}</td>
@@ -166,12 +231,12 @@ const aggiornaTabella = () => {
             <td>${stats.punti}</td>
             <td>${stats.tiriTentati}</td>
             <td>${stats.tiriSegnati}</td>
-            <td>${tiriTotaliPercentuale}%</td>
-            <td>${tiriDa2Percentuale}%</td>
-            <td>${tiriDa3Percentuale}%</td>
+            <td>${((stats.tiriSegnati / stats.tiriTentati) * 100 || 0).toFixed(1)}%</td>
+            <td>${((stats.tiriDa2Segnati / stats.tiriDa2) * 100 || 0).toFixed(1)}%</td>
+            <td>${((stats.tiriDa3Segnati / stats.tiriDa3) * 100 || 0).toFixed(1)}%</td>
             <td>${stats.liberiSegnati}</td>
             <td>${stats.liberiTentati}</td>
-            <td>${liberiPercentuale}%</td>
+            <td>${((stats.liberiSegnati / stats.liberiTentati) * 100 || 0).toFixed(1)}%</td>
             <td>${stats.rimbalziOffensivi}</td>
             <td>${stats.rimbalziDifensivi}</td>
             <td>${stats.palleRecuperate}</td>
@@ -180,121 +245,40 @@ const aggiornaTabella = () => {
             <td>${stats.falliFatti}</td>
             <td>${stats.falliSubiti}</td>
         `;
-        statsBody.appendChild(row);
+        statsTable.appendChild(row); // Aggiungi la riga alla tabella
     });
 };
 
-// Avvia la partita
-startGameButton.addEventListener('click', () => {
-    inputSection.style.display = 'block';
-    statsTable.style.display = 'block';
-    saveGameButton.style.display = 'block';
-    legendSection.style.display = 'block';
-    startGameButton.style.display = 'none';
-    actionInput.focus();
-});
-
-// Ascolta gli input nella casella di testo
-actionInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        const input = actionInput.value.trim();
-
-        // Dividi tra numero giocatore e azione
-        const spazio = input.indexOf(' '); // Trova lo spazio
-        const numero = input.substring(0, spazio); // Prima parte: numero giocatore
-        const azione = input.substring(spazio + 1); // Seconda parte: azione
-
-        if (giocatori[numero]) {
-            aggiornaStatistiche(numero, azione);
-        } else {
-            alert(`Giocatore con numero ${numero} non trovato.`);
-        }
-
-        actionInput.value = ''; // Resetta l'input
-    }
-});
-
-// Salva i dati
-saveGameButton.addEventListener('click', () => {
-    localStorage.setItem('statistichePartita', JSON.stringify(statisticheGiocatori));
-    alert('Dati della partita salvati!');
-});
-// Funzione per scaricare il file JSON
-const scaricaFile = (nomeFile, contenuto) => {
-    const blob = new Blob([contenuto], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = nomeFile;
-    link.click();
-    URL.revokeObjectURL(link.href);
-};
-
-const scaricaCSV = (nomeFile, dati) => {
-    // Creazione del contenuto CSV
-    let contenuto = "Numero,Nome,Punti,Tiri Tentati,Tiri Segnati,% Tiri Totale,% Tiri da 2,% Tiri da 3,Liberi Segnati,Liberi Tentati,% Liberi,Rimbalzi Offensivi,Rimbalzi Difensivi,Palle Recuperate,Palle Perse,Assist,Falli Fatti,Falli Subiti\n";
-
-    Object.keys(dati).forEach(numero => {
-        const stats = dati[numero];
-        const tiriTotaliPercentuale = stats.tiriTentati > 0
-            ? ((stats.tiriSegnati / stats.tiriTentati) * 100).toFixed(1)
-            : '0';
-
-        const tiriDa2Percentuale = stats.tiriDa2 > 0
-            ? ((stats.tiriDa2Segnati / stats.tiriDa2) * 100).toFixed(1)
-            : '0';
-
-        const tiriDa3Percentuale = stats.tiriDa3 > 0
-            ? ((stats.tiriDa3Segnati / stats.tiriDa3) * 100).toFixed(1)
-            : '0';
-
-        const liberiPercentuale = stats.liberiTentati > 0
-            ? ((stats.liberiSegnati / stats.liberiTentati) * 100).toFixed(1)
-            : '0';
-
-        contenuto += `${numero},${giocatori[numero]},${stats.punti},${stats.tiriTentati},${stats.tiriSegnati},${tiriTotaliPercentuale}%,${tiriDa2Percentuale}%,${tiriDa3Percentuale}%,${stats.liberiSegnati},${stats.liberiTentati},${liberiPercentuale}%,${stats.rimbalziOffensivi},${stats.rimbalziDifensivi},${stats.palleRecuperate},${stats.pallePerse},${stats.assist},${stats.falliFatti},${stats.falliSubiti}\n`;
+// Sostituisci giocatore
+const iniziaSostituzione = () => {
+    if (!giocatoreSelezionato) return alert('Seleziona un giocatore in campo!');
+    convocatiList.childNodes.forEach(btn => {
+        btn.addEventListener('click', () => sostituisciGiocatore(btn.textContent.split(' ')[0]));
     });
+};
 
-    // Creazione e download del file CSV
-    const blob = new Blob([contenuto], { type: 'text/csv' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = nomeFile;
-    link.click();
-    URL.revokeObjectURL(link.href);
+const sostituisciGiocatore = (numero) => {
+    const index = giocatoriInCampo.indexOf(giocatoreSelezionato); // Trova l'indice del giocatore selezionato
+    if (index === -1) return; // Se il giocatore non è in campo, esci
+
+    giocatoriInCampo[index] = numero; // Sostituisci il giocatore
+    aggiornaGiocatoriInCampo(); // Aggiorna dinamicamente la lista dei giocatori in campo
+    aggiornaConvocati(); // Aggiorna la lista dei convocati
+
+    giocatoreSelezionato = null; // Resetta il giocatore selezionato
+    bottoneSelezionato = null; // Resetta il bottone selezionato
 };
 
 
-
-const salvaTabellaComeHTML = () => {
-    // Prendi la tabella attuale
-    const tabella = statsTable.outerHTML;
-
-    // Aggiungi un titolo per il file HTML
+// Salva partita
+const salvaPartita = () => {
+    const tabella = document.querySelector('table').outerHTML;
     const contenutoHTML = `
         <!DOCTYPE html>
         <html lang="it">
         <head>
             <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Statistiche Partita</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    color: #000;
-                }
-                table {
-                    border-collapse: collapse;
-                    width: 100%;
-                }
-                table th, table td {
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                }
-                table th {
-                    background-color: #ffc107;
-                }
-            </style>
         </head>
         <body>
             <h1>Statistiche Partita</h1>
@@ -302,25 +286,18 @@ const salvaTabellaComeHTML = () => {
         </body>
         </html>
     `;
-
-    // Creazione e download del file HTML
     const blob = new Blob([contenutoHTML], { type: 'text/html' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-
-    // Nome del file
-    const numeroPartita = localStorage.getItem('numeroPartita')
-        ? parseInt(localStorage.getItem('numeroPartita'))
-        : 1;
-    link.download = `partita${numeroPartita}.html`;
+    link.download = `partita_${new Date().toISOString().split('T')[0]}.html`;
     link.click();
-    URL.revokeObjectURL(link.href);
-
-    // Incrementa l'indice della partita
-    localStorage.setItem('numeroPartita', numeroPartita + 1);
-
-    alert(`Tabella salvata come partita${numeroPartita}.html`);
+};
+const resetButtonState = (numero, lista) => {
+    const button = [...lista.children].find(
+        (btn) => btn.textContent.startsWith(numero)
+    );
+    if (button) button.disabled = false;
 };
 
-// Collega il pulsante "Salva Partita" alla funzione
-saveGameButton.addEventListener('click', salvaTabellaComeHTML);
+// Inizializza rosa squadra
+aggiornaRosaSquadra();
