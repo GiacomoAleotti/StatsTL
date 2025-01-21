@@ -18,6 +18,19 @@ header {
 header h1 {
     margin: 0;
 }
+#logo-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px; /* Spazio tra i loghi */
+}
+
+#logo-container img.logo {
+    width: 50px; /* Dimensione larghezza */
+    height: auto; /* Mantieni proporzioni */
+}
+
 
 button {
     cursor: pointer;
@@ -104,3 +117,46 @@ table tbody tr:nth-child(odd) {
 table tbody tr:nth-child(even) {
     background-color: #eaeaea;
 }
+/* Bottoni per azioni positive */
+.button-positive {
+    background-color: #28a745; /* Verde */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-positive:hover {
+    background-color: #218838; /* Verde più scuro al passaggio del mouse */
+}
+
+/* Bottoni per azioni negative */
+.button-negative {
+    background-color: #dc3545; /* Rosso */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-negative:hover {
+    background-color: #c82333; /* Rosso più scuro al passaggio del mouse */
+}
+.button-positive {
+    background-color: #28a745 !important; /* Verde */
+}
+
+.button-negative {
+    background-color: #dc3545 !important; /* Rosso */
+}
+#action-buttons {
+    display: flex;
+    justify-content: flex-end; /* Allinea i bottoni a destra */
+    gap: 10px; /* Spazio tra i bottoni */
+    margin-bottom: 20px; /* Spazio sotto i bottoni */
+}
+

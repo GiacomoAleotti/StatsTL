@@ -4,9 +4,30 @@ const playersInField = document.getElementById('players-in-field-campo');
 const statsButtons = document.getElementById('buttons-container');
 const statsTable = document.getElementById('stats-body');
 const startGameButton = document.getElementById('start-game');
-const saveGameButton = document.createElement('button');
-const undoButton = document.createElement('button');
-const sostituisciButton = document.createElement('button');
+const saveGameButton = document.getElementById('save-game');
+const undoButton = document.getElementById('undo-action');
+const sostituisciButton = document.getElementById('replace-player');
+
+const convocatiSection = document.getElementById('convocati-section');
+const campoMessage = document.createElement('span');
+campoMessage.textContent = 'Seleziona i 5 giocatori in campo';
+campoMessage.style.marginLeft = '10px';
+campoMessage.style.color = '#ff0000'; // Rosso
+campoMessage.style.fontWeight = 'bold';
+campoMessage.style.display = 'inline-block';
+
+const rosaSection = document.getElementById('rosa-squadra-section');
+const rosaMessage = document.createElement('span');
+rosaMessage.textContent = 'Seleziona i giocatori convocati';
+rosaMessage.style.marginLeft = '10px';
+rosaMessage.style.color = '#ff0000'; // Rosso
+rosaMessage.style.fontWeight = 'bold';
+rosaMessage.style.display = 'inline-block';
+
+// Aggiungi la scritta accanto alla lista della rosa
+rosaSection.appendChild(rosaMessage);
+
+
 
 // Dati giocatori
 const giocatori = {
@@ -103,25 +124,22 @@ const aggiungiConvocato = (numero) => {
 
 // Inizia partita
 startGameButton.addEventListener('click', () => {
-    if (convocati.length === 0) return alert('Seleziona almeno un convocato prima di iniziare la partita!');
+    if (convocati.length === 0) return alert('Seleziona i convocati prima di iniziare la partita!');
     document.getElementById('convocati-section').style.display = 'block';
     document.getElementById('stats-buttons').style.display = 'block';
     document.getElementById('stats-table').style.display = 'block'; // Mostra la tabella
     rosaSquadraList.parentElement.style.display = 'none';
     startGameButton.style.display = 'none';
+    convocatiSection.appendChild(campoMessage); // Aggiungi la scritta
+    aggiornaTabella(); // Aggiorna la tabella con i convocati
+    // Rimuovi la scritta vicino alla lista della rosa
+    rosaMessage.style.display = 'none';
+
 
     // Pulsanti aggiuntivi
-    saveGameButton.textContent = 'Salva Partita';
     saveGameButton.addEventListener('click', salvaPartita);
-    document.body.appendChild(saveGameButton);
-
-    undoButton.textContent = 'Torna Indietro';
     undoButton.addEventListener('click', annullaUltimaAzione);
-    document.body.appendChild(undoButton);
-
-    sostituisciButton.textContent = 'Sostituisci Giocatore';
     sostituisciButton.addEventListener('click', iniziaSostituzione);
-    document.body.appendChild(sostituisciButton);
 });
 const aggiornaGiocatoriInCampo = () => {
     playersInField.innerHTML = '';
@@ -146,6 +164,11 @@ const aggiungiGiocatoreInCampo = (numero) => {
 
     giocatoriInCampo.push(numero); // Aggiungi il giocatore
     aggiornaGiocatoriInCampo(); // Aggiorna dinamicamente la lista
+
+    // Nascondi la scritta se sono stati selezionati 5 giocatori
+    if (giocatoriInCampo.length === 5) {
+        campoMessage.style.display = 'none';
+    }
 };
 
 
@@ -222,7 +245,7 @@ const annullaUltimaAzione = () => {
 const aggiornaTabella = () => {
     statsTable.innerHTML = ''; // Svuota il corpo della tabella
 
-    Object.keys(statisticheGiocatori).forEach(numero => {
+    convocati.forEach(numero => { // Itera solo sui convocati
         const stats = statisticheGiocatori[numero];
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -249,13 +272,25 @@ const aggiornaTabella = () => {
     });
 };
 
+
 // Sostituisci giocatore
 const iniziaSostituzione = () => {
     if (!giocatoreSelezionato) return alert('Seleziona un giocatore in campo!');
+    
+    // Aggiungi la classe "selected" per evidenziare il bottone
+    sostituisciButton.classList.add('selected');
+
+    // Attiva la sostituzione con un clic su un giocatore dalla lista convocati
     convocatiList.childNodes.forEach(btn => {
-        btn.addEventListener('click', () => sostituisciGiocatore(btn.textContent.split(' ')[0]));
+        btn.addEventListener('click', () => {
+            sostituisciGiocatore(btn.textContent.split(' ')[0]);
+            
+            // Rimuovi la classe "selected" dopo la sostituzione
+            sostituisciButton.classList.remove('selected');
+        }, { once: true }); // L'evento sarà ascoltato solo una volta per ogni giocatore
     });
 };
+
 
 const sostituisciGiocatore = (numero) => {
     const index = giocatoriInCampo.indexOf(giocatoreSelezionato); // Trova l'indice del giocatore selezionato
@@ -272,26 +307,104 @@ const sostituisciGiocatore = (numero) => {
 
 // Salva partita
 const salvaPartita = () => {
-    const tabella = document.querySelector('table').outerHTML;
-    const contenutoHTML = `
-        <!DOCTYPE html>
-        <html lang="it">
-        <head>
-            <meta charset="UTF-8">
-            <title>Statistiche Partita</title>
-        </head>
-        <body>
-            <h1>Statistiche Partita</h1>
-            ${tabella}
-        </body>
-        </html>
+    const tabella = document.querySelector('table').outerHTML; // Ottieni il contenuto della tabella
+    const stile = `
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f5f5f5;
+                color: #000;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                background-color: #fff;
+            }
+            table th, table td {
+                border: 1px solid #000;
+                text-align: center;
+                padding: 10px;
+            }
+            table th {
+                background-color: #ffc107;
+                color: #000;
+            }
+            table tbody tr:nth-child(odd) {
+                background-color: #f9f9f9;
+            }
+            table tbody tr:nth-child(even) {
+                background-color: #eaeaea;
+            }
+        </style>
     `;
-    const blob = new Blob([contenutoHTML], { type: 'text/html' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `partita_${new Date().toISOString().split('T')[0]}.html`;
-    link.click();
+
+    const contenutoHTML = `
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Statistiche Partita</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            header {
+                text-align: center;
+                position: relative;
+            }
+            #logo-container {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                display: flex;
+                gap: 10px;
+            }
+            #logo-container img {
+                width: 50px;
+                height: auto;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            table th, table td {
+                border: 1px solid #000;
+                text-align: center;
+                padding: 10px;
+            }
+            table th {
+                background-color: #ffc107;
+                color: #000;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Statistiche Partita</h1>
+            <div id="logo-container">
+                <img src="logo1.png" alt="Logo 1">
+                <img src="logo2.png" alt="Logo 2">
+            </div>
+        </header>
+        <main>
+            ${tabella}
+        </main>
+    </body>
+    </html>
+`;
+
+const blob = new Blob([contenutoHTML], { type: 'text/html' });
+const link = document.createElement('a');
+link.href = URL.createObjectURL(blob);
+link.download = `partita_${new Date().toISOString().split('T')[0]}.html`;
+link.click();
 };
+
+
 const resetButtonState = (numero, lista) => {
     const button = [...lista.children].find(
         (btn) => btn.textContent.startsWith(numero)

@@ -11,7 +11,16 @@
         <h1>Registrazione Dati Partita</h1>
         <button id="start-game">Inizia Partita</button>
     </header>
+    <header>
+        <h1>Registrazione Dati Partita</h1>
+        <div id="logo-container">
+            <img src="logo1.png" alt="Logo 1" class="logo">
+            <img src="logo2.png" alt="Logo 2" class="logo">
+        </div>
+    </header>
+    
     <main>
+        
         <section id="rosa-squadra-section">
             <h2>Rosa Squadra</h2>
             <div id="rosa-squadra">
@@ -38,25 +47,39 @@
         <section id="stats-buttons" style="display: none;">
             <h2>Statistiche</h2>
             <div id="buttons-container">
-                <button data-action="2i">Tiro da 2 segnato</button>
-                <button data-action="2o">Tiro da 2 sbagliato</button>
-                <button data-action="3i">Tiro da 3 segnato</button>
-                <button data-action="3o">Tiro da 3 sbagliato</button>
-                <button data-action="li">Tiro libero segnato</button>
-                <button data-action="lo">Tiro libero sbagliato</button>
-                <button data-action="ro">Rimbalzo offensivo</button>
-                <button data-action="rd">Rimbalzo difensivo</button>
-                <button data-action="pp">Palla persa</button>
-                <button data-action="pr">Palla recuperata</button>
-                <button data-action="a">Assist</button>
-                <button data-action="ff">Fallo fatto</button>
-                <button data-action="fs">Fallo subito</button>
+                <!-- Bottoni positivi -->
+                <div id="positive-buttons">
+                    <button data-action="2i" class="button-positive">Tiro da 2 segnato</button>
+                    <button data-action="3i" class="button-positive">Tiro da 3 segnato</button>
+                    <button data-action="li" class="button-positive">Tiro libero segnato</button>
+                    <button data-action="fs" class="button-positive">Fallo subito</button>
+                    <button data-action="pr" class="button-positive">Palla recuperata</button>
+                    <button data-action="ro" class="button-positive">Rimbalzo offensivo</button>
+                    <button data-action="rd" class="button-positive">Rimbalzo difensivo</button>
+                    <button data-action="a" class="button-positive">Assist</button>
+                </div>
+        
+                <!-- Bottoni negativi -->
+                <div id="negative-buttons">
+                    <button data-action="2o" class="button-negative">Tiro da 2 sbagliato</button>
+                    <button data-action="3o" class="button-negative">Tiro da 3 sbagliato</button>
+                    <button data-action="lo" class="button-negative">Tiro libero sbagliato</button>
+                    <button data-action="ff" class="button-negative">Fallo fatto</button>
+                    <button data-action="pp" class="button-negative">Palla persa</button>
+                    
+                </div>
             </div>
         </section>
-
+        
         <!-- Bottoni Torna Indietro e Sostituisci sopra la tabella -->
-
+        <!-- Sezione per i bottoni aggiuntivi -->
+        <section id="action-buttons">
+            <button id="save-game">Salva Partita</button>
+            <button id="undo-action">Annula ultima Stat</button>
+            <button id="replace-player">Sostituisci Giocatore</button>
+        </section>
 </div>
+
 
         <!-- Tabella Statistiche -->
         <section id="stats-table">
